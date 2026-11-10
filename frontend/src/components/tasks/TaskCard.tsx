@@ -1,7 +1,15 @@
-import { format } from 'date-fns';
 import { Calendar, Edit2, Trash2, CheckCircle2, Circle, FolderOpen } from 'lucide-react';
 import type { Task } from '../../types';
 import { PriorityBadge, StatusBadge } from '../ui/Badge';
+
+function formatDue(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(d);
+  } catch {
+    return dateStr;
+  }
+}
 
 interface TaskCardProps {
   task: Task;
@@ -45,7 +53,7 @@ export function TaskCard({ task, onEdit, onDelete, onStatusToggle, compact }: Ta
             {task.dueDate && (
               <span className="inline-flex items-center gap-1 text-xs text-text-muted">
                 <Calendar className="w-3 h-3" />
-                {format(new Date(task.dueDate), 'MMM d')}
+                {formatDue(task.dueDate)}
               </span>
             )}
           </div>
