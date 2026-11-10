@@ -1,0 +1,26 @@
+"""AISession model."""
+from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import DateTime, ForeignKey, JSON, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.database import Base
+
+
+class AISession(Base):
+    __tablename__ = "ai_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    command: Mapped[str] = mapped_column(Text, nullable=False)
+    plan: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="pending")  # pending|running|completed|failed
+    result_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    tool_calls: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", back_populates="ai_sessions")  # noqa: F821
